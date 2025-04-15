@@ -1,0 +1,106 @@
+Table users {
+  id bigint [pk, increment]
+  first_name text [not null]
+  last_name text [not null]
+  email text [unique, not null]
+  password text [not null]
+  region text [not null]
+  last_login timestamptz
+  registered_at timestamptz [default: `now()`]
+}
+
+Table user_profiles {
+  user_id bigint [pk]
+  avatar text
+  degree text
+  university text
+  profile_description text
+  language text
+  currency text
+}
+
+Ref: user_profiles.user_id > users.id
+
+Table products {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  name text [not null]
+  description text [not null]
+  location text [not null]
+  type text [note: 'check (type in (\'trade\', \'sale\', \'both\'))', not null]
+  created_at timestamptz [default: `now()`]
+  status text [note: 'check (status in (\'published\', \'unpublished\'))', not null]
+  price numeric
+}
+
+Ref: products.user_id > users.id
+
+Table product_images {
+  id bigint [pk, increment]
+  product_id bigint [not null]
+  image_url text [not null]
+
+}
+
+Ref: product_images.product_id > products.id
+
+Table product_tags {
+  id bigint [pk, increment]
+  product_id bigint [not null]
+  tag text [not null]
+
+}
+
+Ref: product_tags.product_id > products.id
+
+Table chats {
+  id bigint [pk, increment]
+  user1_id bigint [not null]
+  user2_id bigint [not null]
+
+}
+
+Ref: chats.user1_id > users.id
+Ref: chats.user2_id > users.id
+
+Table chat_messages {
+  id bigint [pk, increment]
+  chat_id bigint [not null]
+  sender_id bigint [not null]
+  message text [not null]
+  sent_at timestamptz [default: `now()`]
+
+}
+
+Ref: chat_messages.chat_id > chats.id
+Ref: chat_messages.sender_id > users.id
+
+Table notifications {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  message text [not null]
+  created_at timestamptz [default: `now()`]
+
+}
+
+Ref: notifications.user_id > users.id
+
+Table contacts {
+  user_id bigint [not null]
+  contact_id bigint [not null]
+
+  primary key (user_id, contact_id)
+}
+
+Ref: contacts.user_id > users.id
+Ref: contacts.contact_id > users.id
+
+Table favorite_products {
+  user_id bigint [not null]
+  product_id bigint [not null]
+
+  primary key (user_id, product_id)
+}
+
+Ref: favorite_products.user_id > users.id
+Ref: favorite_products.product_id > products.id
